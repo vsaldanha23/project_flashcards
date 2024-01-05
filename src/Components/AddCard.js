@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useHistory, useParams } from "react-router-dom/cjs/react-router-dom.min";
 import { createCard, readDeck } from "../utils/api/index";
+import CardForm from "./CardForm";
 
 function AddCard(){
     const history = useHistory();
@@ -10,7 +11,7 @@ function AddCard(){
         front:"",
         back:"",
     };
-    const [newCard, setNewCard] = useState(initialState);
+    const [card, setCard] = useState(initialState);
 
 
 
@@ -33,16 +34,16 @@ function AddCard(){
     async function handleSubmit(event){
         event.preventDefault();
         const abortController = new AbortController();
-        const response = await createCard(deckId,{...newCard}, abortController.signal);
+        const response = await createCard(deckId,{...card}, abortController.signal);
         history.go(0);
-        setNewCard(initialState);
+        setCard(initialState);
         return(response);
     }
 
     async function handleChange({target}){
-        setNewCard(
+        setCard(
             {
-                ...newCard,
+                ...card,
                 [target.name] : target.value
             });
     }
@@ -64,35 +65,13 @@ function AddCard(){
                     Add Card
                 </li>
             </ol>
-            <form onSubmit={handleSubmit}>
+            <div className="card-name">
                 <h2>{deck.name}: Add Card</h2>
-                <div className="form-group">
-                    <label>Front</label>
-                    <textarea 
-                        id="front" 
-                        name="front" 
-                        placeholder="Front side of the card"
-                        className="form-control"
-                        onChange={handleChange}
-                        type="text"
-                        value={newCard.front}
-                    />
-                </div>
-                <div>
-                    <label>Back</label>
-                    <textarea
-                        id="back"
-                        name="back"
-                        placeholder="Back side of the card"
-                        className="form-control"
-                        onChange={handleChange}
-                        type="text"
-                        value={newCard.back}
-                    />
-                </div>
-                    <button className="btn btn-secondary mx-1" onClick={()=>handleDone()}>Done</button>
-                    <button className="btn btn-primary mx-1" type="submit">Save</button>               
-            </form>
+            </div>
+            <div>
+                <CardForm handleSubmit={handleSubmit} handleChange={handleChange} front={card.front} back={card.back} handleDone={()=>handleDone()}/>
+            </div>
+    
         </div>
 
     );
